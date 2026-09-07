@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login Penyewa - Manajemen Kontrakan</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#0EA5E9;
+  --primary-dark:#0284C7;
+  --bg:#F0F9FF;
+  --card:#FFFFFF;
+  --text:#1E293B;
+  --muted:#64748B;
+  --border:#E2E8F0;
+  --success:#10B981;
+  --error:#EF4444;
+  --radius:20px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Nunito', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:16px;
+}
+.container{
+  width:100%;
+  max-width:440px;
+}
+.header{
+  text-align:center;
+  margin-bottom:20px;
+}
+.logo{
+  width:64px;height:64px;
+  background: var(--primary);
+  color:white;
+  border-radius:18px;
+  display:inline-flex;
+  align-items:center;justify-content:center;
+  font-size:32px;font-weight:800;
+  box-shadow:0 8px 20px rgba(14,165,233,.3);
+}
+.header h1{
+  margin-top:12px;
+  font-size:26px;font-weight:800;
+}
+.header p{
+  color:var(--muted);
+  font-size:15px;
+  margin-top:4px;
+}
+.card{
+  background:var(--card);
+  border-radius: var(--radius);
+  padding:28px 24px;
+  box-shadow:0 10px 30px rgba(0,0,0,.07);
+  border:1px solid var(--border);
+}
+.tabs{
+  display:flex;
+  background:#F1F5F9;
+  border-radius:14px;
+  padding:4px;
+  margin-bottom:22px;
+}
+.tab{
+  flex:1;
+  padding:12px 8px;
+  border-radius:10px;
+  border:0;
+  background:transparent;
+  font-weight:700;
+  font-size:15px;
+  cursor:pointer;
+  color:var(--muted);
+  transition:.2s;
+}
+.tab.active{
+  background:white;
+  color:var(--text);
+  box-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+.label{
+  display:block;
+  font-weight:700;
+  font-size:15px;
+  margin:16px 0 8px;
+}
+.input-wrap{position:relative}
+.input{
+  width:100%;
+  padding:16px 16px;
+  font-size:17px;
+  border:2px solid var(--border);
+  border-radius:14px;
+  outline:none;
+  transition:.2s;
+  font-family:inherit;
+}
+.input:focus{border-color:var(--primary); background:#F0F9FF}
+.input.error{border-color:var(--error); background:#FEF2F2}
+.hint{
+  font-size:13px;color:var(--muted);margin-top:6px;
+}
+.error-msg{
+  font-size:13px;color:var(--error);margin-top:6px;display:none;font-weight:600
+}
+.btn{
+  width:100%;
+  padding:16px;
+  border-radius:14px;
+  border:0;
+  font-size:18px;
+  font-weight:800;
+  cursor:pointer;
+  font-family:inherit;
+  transition:.2s;
+  margin-top:22px;
+}
+.btn-primary{
+  background:var(--primary);
+  color:white;
+  box-shadow:0 6px 16px rgba(14,165,233,.35);
+}
+.btn-primary:active{transform:scale(.98); background:var(--primary-dark)}
+.btn-secondary{
+  background:#F1F5F9;color:var(--text);margin-top:12px;
+}
+.btn:disabled{opacity:.5;pointer-events:none}
+.pin-grid{
+  display:grid;grid-template-columns:repeat(6,1fr);gap:8px;
+}
+.pin-grid input{
+  text-align:center;
+  font-size:22px;
+  font-weight:800;
+  padding:14px 4px;
+}
+.id-badge{
+  background:#E0F2FE;
+  color:#0369A1;
+  padding:10px 14px;
+  border-radius:12px;
+  font-size:14px;
+  font-weight:700;
+  display:inline-flex;
+  gap:8px;
+  align-items:center;
+  margin-bottom:6px;
+}
+.success-box{
+  background:#ECFDF5;
+  border:2px solid #A7F3D0;
+  padding:16px;
+  border-radius:14px;
+  text-align:center;
+}
+.divider{
+  text-align:center;
+  margin:18px 0 8px;
+  color:var(--muted);
+  font-size:14px;
+  position:relative;
+}
+.divider::before{
+  content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:var(--border);
+}
+.divider span{background:white;padding:0 12px;position:relative}
+
+/* OTP Modal */
+.modal-backdrop{
+  position:fixed;inset:0;background:rgba(15,23,42,.6);
+  display:none;align-items:center;justify-content:center;padding:16px;z-index:99;
+}
+.modal-backdrop.show{display:flex}
+.modal{
+  background:white;border-radius:20px;padding:26px 22px;width:100%;max-width:380px;
+  animation:pop .25s ease;
+}
+@keyframes pop{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+.otp-inputs{display:flex;gap:8px;justify-content:center;margin:18px 0}
+.otp-inputs input{
+  width:46px;height:54px;text-align:center;font-size:22px;font-weight:800;
+  border-radius:12px;border:2px solid var(--border)
+}
+.otp-inputs input:focus{border-color:var(--primary);outline:none}
+
+.footer-note{
+  text-align:center;margin-top:18px;color:var(--muted);font-size:13px;line-height:1.5
+}
+.toggle-pass{
+  position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  background:transparent;border:0;font-size:20px;cursor:pointer;
+}
+.view{display:none}
+.view.active{display:block}
+.badge-ok{color:var(--success);font-size:13px;font-weight:700;margin-top:6px;display:none}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="logo">K</div>
+    <h1>KontrakanKu</h1>
+    <p>Login Penyewa - Mudah untuk Ibu & Bapak</p>
+  </div>
+
+  <div class="card">
+    <div class="tabs">
+      <button class="tab active" onclick="switchView('login')">Masuk</button>
+      <button class="tab" onclick="switchView('register')">Daftar</button>
+      <button class="tab" onclick="switchView('forgot')">Lupa PIN</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="view-login" class="view active">
+      <div id="login-id-preview" style="display:none" class="id-badge">🆔 <span id="login-id-text"></span></div>
+      <label class="label">Nomor HP / Email</label>
+      <input id="login-user" class="input" type="text" placeholder="Contoh: 0812xxxx atau email@gmail.com" inputmode="text">
+      <div class="error-msg" id="login-user-err"></div>
+
+      <label class="label">PIN 6 Digit</label>
+      <div class="input-wrap">
+        <input id="login-pin" class="input" type="password" placeholder="••••••" maxlength="6" inputmode="numeric" pattern="[0-9]*">
+        <button class="toggle-pass" onclick="togglePin('login-pin')">👁️</button>
+      </div>
+      <div class="error-msg" id="login-pin-err"></div>
+
+      <button class="btn btn-primary" onclick="doLogin()">Masuk Sekarang</button>
+      <div class="divider"><span>atau</span></div>
+      <button class="btn btn-secondary" onclick="switchView('register')">Belum punya akun? Daftar</button>
+      <p class="footer-note">🔒 Aman, tanpa batas salah PIN. Jika lupa, pakai menu Lupa PIN.</p>
+    </div>
+
+    <!-- REGISTER -->
+    <div id="view-register" class="view">
+      <label class="label">Nama Lengkap</label>
+      <input id="reg-name" class="input" type="text" placeholder="Contoh: Ibu Siti Aminah">
+      <div class="error-msg" id="reg-name-err"></div>
+
+      <label class="label">Nomor HP (Wajib, untuk Login)</label>
+      <input id="reg-hp" class="input" type="tel" placeholder="0812xxxxxxx" inputmode="numeric">
+      <div class="hint">Nomor HP tidak boleh sama dengan penyewa lain</div>
+      <div class="error-msg" id="reg-hp-err"></div>
+      <div class="badge-ok" id="reg-hp-ok">✓ Nomor tersedia</div>
+
+      <label class="label">Email (Opsional, cadangan login)</label>
+      <input id="reg-email" class="input" type="email" placeholder="opsional@email.com">
+      <div class="error-msg" id="reg-email-err"></div>
+
+      <label class="label">Buat PIN 6 Angka</label>
+      <div class="pin-grid">
+        <input maxlength="1" class="input pin" id="pin1" inputmode="numeric">
+        <input maxlength="1" class="input pin" id="pin2" inputmode="numeric">
+        <input maxlength="1" class="input pin" id="pin3" inputmode="numeric">
+        <input maxlength="1" class="input pin" id="pin4" inputmode="numeric">
+        <input maxlength="1" class="input pin" id="pin5" inputmode="numeric">
+        <input maxlength="1" class="input pin" id="pin6" inputmode="numeric">
+      </div>
+      <div class="error-msg" id="reg-pin-err"></div>
+
+      <label class="label">Ulangi PIN</label>
+      <div class="pin-grid">
+        <input maxlength="1" class="input pin" id="pin1c" inputmode="numeric">
+        <input maxlength="1" class="input pin" id="pin2c" inputmode="numeric">
+        <input maxlength="1" class="input pin" id="pin3c" inputmode="numeric">
+        <input maxlength="1" class="input pin" id="pin4c" inputmode="numeric">
+        <input maxlength="1" class="input pin" id="pin5c" inputmode="numeric">
+        <input maxlength="1" class="input pin" id="pin6c" inputmode="numeric">
+      </div>
+      <div class="error-msg" id="reg-pinc-err"></div>
+
+      <button class="btn btn-primary" onclick="doRegister()">Daftar & Kirim OTP</button>
+      <p class="footer-note">Dengan mendaftar, ID Penyewa otomatis dibuat sistem.<br>OTP akan dikirim untuk verifikasi.</p>
+    </div>
+
+    <!-- FORGOT -->
+    <div id="view-forgot" class="view">
+      <div style="background:#FFFBEB;border:2px solid #FDE68A;padding:14px;border-radius:12px;font-size:14px;line-height:1.5">
+        🔑 <b>Lupa PIN?</b><br> Masukkan Nomor HP terdaftar, kami kirim OTP untuk buat PIN baru. Tidak ada batas salah.
+      </div>
+
+      <label class="label">Nomor HP Terdaftar</label>
+      <input id="forgot-hp" class="input" type="tel" placeholder="0812xxxxxxx">
+      <div class="error-msg" id="forgot-hp-err"></div>
+
+      <button class="btn btn-primary" onclick="doForgotSendOTP()">Kirim OTP</button>
+      <button class="btn btn-secondary" onclick="switchView('login')">Kembali ke Login</button>
+    </div>
+
+    <!-- DASHBOARD MOCK -->
+    <div id="view-dashboard" class="view">
+      <div class="success-box">
+        <div style="font-size:40px">🎉</div>
+        <h3 style="margin:10px 0 6px">Berhasil Masuk!</h3>
+        <p id="dash-info" style="font-size:15px;color:var(--muted)"></p>
+      </div>
+      <div style="margin-top:16px;padding:14px;border:1px dashed var(--border);border-radius:12px;font-size:14px">
+        <b>Data Akun:</b><br>
+        <span id="dash-detail"></span>
+      </div>
+      <button class="btn btn-secondary" onclick="doLogout()">Keluar</button>
+    </div>
+  </div>
+  <p class="footer-note" style="margin-top:14px">Desain: Modern, tombol besar, font Nunito mudah dibaca.<br>Responsif: Android, iPhone, Tablet, Desktop.</p>
+</div>
+
+<!-- OTP MODAL -->
+<div id="otp-modal" class="modal-backdrop">
+  <div class="modal">
+    <h3 style="font-size:20px;font-weight:800;text-align:center">Verifikasi OTP</h3>
+    <p id="otp-desc" style="text-align:center;color:var(--muted);font-size:14px;margin-top:6px">Kode OTP 6 digit telah dikirim</p>
+    <div class="otp-inputs">
+      <input maxlength="1" id="otp1"><input maxlength="1" id="otp2"><input maxlength="1" id="otp3"><input maxlength="1" id="otp4"><input maxlength="1" id="otp5"><input maxlength="1" id="otp6">
+    </div>
+    <div id="otp-error" class="error-msg" style="text-align:center;display:none"></div>
+    <div style="text-align:center;font-size:13px;color:var(--muted);margin-bottom:8px">Demo OTP: <b style="color:var(--text)">123456</b> (Simulasi)</div>
+    <button class="btn btn-primary" style="margin-top:8px" onclick="verifyOTP()">Verifikasi</button>
+    <button class="btn btn-secondary" onclick="closeOTP()">Batal</button>
+    <p style="text-align:center;margin-top:12px;font-size:13px"><span id="otp-timer">Kirim ulang dalam 30s</span> <a href="#" id="resend-link" style="display:none" onclick="resendOTP();return false">Kirim ulang OTP</a></p>
+  </div>
+</div>
+
+<!-- NEW PIN MODAL -->
+<div id="newpin-modal" class="modal-backdrop">
+  <div class="modal">
+    <h3 style="font-size:20px;font-weight:800;text-align:center">Buat PIN Baru</h3>
+    <label class="label">PIN Baru 6 Digit</label>
+    <input id="new-pin" class="input" type="password" maxlength="6" placeholder="••••••">
+    <label class="label">Ulangi PIN Baru</label>
+    <input id="new-pin-c" class="input" type="password" maxlength="6" placeholder="••••••">
+    <div id="newpin-err" class="error-msg" style="display:none"></div>
+    <button class="btn btn-primary" onclick="saveNewPin()">Simpan PIN Baru</button>
+  </div>
+</div>
+
+<script>
+const LS_KEY = 'penyewa_db_v2';
+let pendingUser = null; // for registration
+let forgotUser = null;
+let currentOTP = '123456';
+let otpMode = 'register'; // register | forgot
+
+function getDB(){ try{return JSON.parse(localStorage.getItem(LS_KEY)||'[]')}catch(e){return []} }
+function saveDB(db){ localStorage.setItem(LS_KEY, JSON.stringify(db)) }
+
+function genId(){
+  const year = new Date().getFullYear();
+  const rand = Math.floor(1000 + Math.random()*9000);
+  return `PNY-${year}-${rand}`;
+}
+
+function switchView(name){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  const map = {login:0, register:1, forgot:2, dashboard:0};
+  if(map[name]!==undefined && name!=='dashboard'){
+    document.querySelectorAll('.tab')[map[name]].classList.add('active');
+  }
+  if(name==='login') document.querySelectorAll('.tab')[0].classList.add('active');
+}
+
+function togglePin(id){
+  const el = document.getElementById(id);
+  el.type = el.type==='password' ? 'text' : 'password';
+}
+
+function showErr(id, msg){
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+function hideErr(id){
+  const el = document.getElementById(id);
+  if(el){el.style.display='none'}
+}
+
+function validateHP(hp){
+  return /^08[0-9]{8,11}$/.test(hp);
+}
+function validateEmail(email){
+  if(!email) return true;
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function collectPin(prefix){
+  let pin='';
+  for(let i=1;i<=6;i++){ pin+= document.getElementById(prefix+i).value||''; }
+  return pin;
+}
+function collectPinC(){
+  let pin='';
+  for(let i=1;i<=6;i++){ pin+= document.getElementById('pin'+i+'c').value||''; }
+  return pin;
+}
+
+// Auto move pin inputs
+document.querySelectorAll('.pin').forEach(inp=>{
+  inp.addEventListener('input', (e)=>{
+    if(!/^[0-9]$/.test(e.target.value)) e.target.value='';
+    else {
+      const next = e.target.nextElementSibling;
+      // for grid, find next input in DOM order with class pin
+      let el = e.target;
+      while(el = el.nextElementSibling){
+        if(el.classList && el.classList.contains('pin')){ el.focus(); break; }
+      }
+      // handle second grid jump
+      if(!el){
+        // try find next grid first input
+        const all = [...document.querySelectorAll('.pin')];
+        const idx = all.indexOf(e.target);
+        if(all[idx+1]) all[idx+1].focus();
+      }
+    }
+  });
+  inp.addEventListener('keydown', (e)=>{
+    if(e.key==='Backspace' && !e.target.value){
+      const all = [...document.querySelectorAll('.pin')];
+      const idx = all.indexOf(e.target);
+      if(all[idx-1]) all[idx-1].focus();
+    }
+  });
+});
+
+document.getElementById('reg-hp').addEventListener('input', ()=>{
+  const hp = document.getElementById('reg-hp').value.trim();
+  const db = getDB();
+  if(validateHP(hp)){
+    if(db.some(u=>u.hp===hp)){
+      showErr('reg-hp-err','Nomor HP sudah terdaftar'); document.getElementById('reg-hp-ok').style.display='none';
+    } else {
+      hideErr('reg-hp-err'); document.getElementById('reg-hp-ok').style.display='block';
+    }
+  } else {
+    document.getElementById('reg-hp-ok').style.display='none';
+  }
+});
+
+function doRegister(){
+  hideErr('reg-name-err'); hideErr('reg-hp-err'); hideErr('reg-email-err'); hideErr('reg-pin-err'); hideErr('reg-pinc-err');
+  const name = document.getElementById('reg-name').value.trim();
+  const hp = document.getElementById('reg-hp').value.trim();
+  const email = document.getElementById('reg-email').value.trim().toLowerCase();
+  const pin = collectPin('pin');
+  const pinC = collectPinC();
+  let ok = true;
+  if(name.length<3){ showErr('reg-name-err','Nama minimal 3 huruf'); ok=false; }
+  if(!validateHP(hp)){ showErr('reg-hp-err','Format HP harus 08... 10-13 digit'); ok=false; }
+  if(!validateEmail(email)){ showErr('reg-email-err','Format email tidak valid'); ok=false; }
+  if(!/^[0-9]{6}$/.test(pin)){ showErr('reg-pin-err','PIN harus 6 digit angka'); ok=false; }
+  if(pin!==pinC){ showErr('reg-pinc-err','PIN tidak sama'); ok=false; }
+  const db = getDB();
+  if(db.some(u=>u.hp===hp)){ showErr('reg-hp-err','Nomor HP sudah dipakai'); ok=false; }
+  if(email && db.some(u=>u.email===email)){ showErr('reg-email-err','Email sudah dipakai'); ok=false; }
+  if(!ok) return;
+
+  pendingUser = { id: genId(), name, hp, email: email||null, pin, createdAt: new Date().toISOString() };
+  otpMode='register';
+  openOTP(`OTP dikirim ke ${hp} ${email? ' & '+email : ''}`);
+}
+
+function openOTP(desc){
+  document.getElementById('otp-desc').textContent = desc;
+  document.getElementById('otp-modal').classList.add('show');
+  startTimer();
+  // clear otp inputs
+  for(let i=1;i<=6;i++) document.getElementById('otp'+i).value='';
+  hideErr('otp-error');
+  document.getElementById('otp1').focus();
+}
+
+function closeOTP(){ document.getElementById('otp-modal').classList.remove('show'); }
+
+function verifyOTP(){
+  let code='';
+  for(let i=1;i<=6;i++) code+= document.getElementById('otp'+i).value;
+  if(code!==currentOTP){
+    const el=document.getElementById('otp-error');
+    el.textContent='Kode OTP salah. Coba 123456 (demo)';
+    el.style.display='block';
+    return;
+  }
+  closeOTP();
+  if(otpMode==='register'){
+    const db=getDB();
+    db.push(pendingUser);
+    saveDB(db);
+    alert(`Pendaftaran berhasil! ID Anda: ${pendingUser.id}\nSilakan login dengan HP & PIN`);
+    switchView('login');
+    document.getElementById('login-user').value = pendingUser.hp;
+  } else if(otpMode==='forgot'){
+    document.getElementById('newpin-modal').classList.add('show');
+  }
+}
+
+function doLogin(){
+  hideErr('login-user-err'); hideErr('login-pin-err');
+  const userInput = document.getElementById('login-user').value.trim().toLowerCase();
+  const pin = document.getElementById('login-pin').value.trim();
+  if(!userInput){ showErr('login-user-err','Masukkan HP atau Email'); return; }
+  if(!/^[0-9]{6}$/.test(pin)){ showErr('login-pin-err','PIN harus 6 digit angka'); return; }
+
+  const db=getDB();
+  const user = db.find(u=> u.hp===userInput || (u.email && u.email===userInput));
+  if(!user){ showErr('login-user-err','Akun tidak ditemukan'); return; }
+  if(user.pin!==pin){
+    // Tanpa batas salah - tidak mengunci
+    showErr('login-pin-err','PIN salah. Silakan coba lagi atau gunakan Lupa PIN (tanpa batas percobaan)');
+    return;
+  }
+  // success
+  document.getElementById('login-id-preview').style.display='inline-flex';
+  document.getElementById('login-id-text').textContent = user.id;
+  document.getElementById('dash-info').textContent = `Selamat datang, ${user.name}`;
+  document.getElementById('dash-detail').innerHTML = `🆔 ID: <b>${user.id}</b><br>👤 Nama: ${user.name}<br>📱 HP: ${user.hp}<br>📧 Email: ${user.email||'- (tidak ada)'}<br>🔐 Login via HP & PIN (email opsional)`;
+  switchView('dashboard');
+}
+
+function doForgotSendOTP(){
+  hideErr('forgot-hp-err');
+  const hp = document.getElementById('forgot-hp').value.trim();
+  if(!validateHP(hp)){ showErr('forgot-hp-err','Masukkan HP yang valid'); return; }
+  const db=getDB();
+  const user = db.find(u=>u.hp===hp);
+  if(!user){ showErr('forgot-hp-err','Nomor HP tidak terdaftar'); return; }
+  forgotUser = user;
+  otpMode='forgot';
+  openOTP(`OTP pemulihan dikirim ke ${hp}`);
+}
+
+function saveNewPin(){
+  const p1 = document.getElementById('new-pin').value.trim();
+  const p2 = document.getElementById('new-pin-c').value.trim();
+  const err = document.getElementById('newpin-err');
+  err.style.display='none';
+  if(!/^[0-9]{6}$/.test(p1)){ err.textContent='PIN harus 6 digit angka'; err.style.display='block'; return; }
+  if(p1!==p2){ err.textContent='PIN tidak sama'; err.style.display='block'; return; }
+  const db=getDB();
+  const idx = db.findIndex(u=>u.hp===forgotUser.hp);
+  if(idx>=0){ db[idx].pin = p1; saveDB(db); }
+  document.getElementById('newpin-modal').classList.remove('show');
+  alert('PIN baru berhasil disimpan. Silakan login.');
+  switchView('login');
+}
+
+function doLogout(){
+  document.getElementById('login-pin').value='';
+  document.getElementById('login-id-preview').style.display='none';
+  switchView('login');
+}
+
+let timerInt;
+function startTimer(){
+  let s=30;
+  const timerEl=document.getElementById('otp-timer');
+  const resendEl=document.getElementById('resend-link');
+  timerEl.style.display='inline'; resendEl.style.display='none';
+  clearInterval(timerInt);
+  timerInt=setInterval(()=>{
+    s--; timerEl.textContent=`Kirim ulang dalam ${s}s`;
+    if(s<=0){ clearInterval(timerInt); timerEl.style.display='none'; resendEl.style.display='inline'; }
+  },1000);
+}
+function resendOTP(){ currentOTP='123456'; startTimer(); alert('OTP baru dikirim (demo: 123456)'); }
+
+// OTP auto move
+for(let i=1;i<=6;i++){
+  const el=document.getElementById('otp'+i);
+  el.addEventListener('input', ()=>{
+    if(el.value && i<6) document.getElementById('otp'+(i+1)).focus();
+  });
+}
+
+// Demo seed
+if(getDB().length===0){
+  saveDB([{id:'PNY-2026-1001', name:'Ibu Contoh', hp:'081234567890', email:'ibu@example.com', pin:'123456', createdAt:new Date().toISOString()}]);
+}
+</script>
+</body>
+</html>
